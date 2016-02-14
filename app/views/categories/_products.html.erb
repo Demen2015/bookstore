@@ -1,0 +1,17 @@
+
+<div align="right" style="margin-right:15px"><%= paginate @products ,:remote => true  %> </div>
+
+<% @products.each do | book |%>
+  <div class="col-md-4">
+       <!-- for render -->
+       <div class="thumbnail">
+           <%= image_tag(book.image, alt: "test") %>
+           <h3 align="center"><%= book.title %></h3>
+           <p align="center" style="color:red;font-size:14pt;"><%= number_to_currency(book.price , unit: "", precision: 2,strip_insignificant_zeros: true) + 'VND' %></p>
+           <p align="center"><a href="/cart/<%= book.id %>" class="btn btn-primary">Buy Now! </a>
+            <%= link_to "More Info", {controller: "products", action: "show",id: book.id}, class: "btn btn-success" %>
+           </p>
+        </div>
+
+  </div>
+<% end %>

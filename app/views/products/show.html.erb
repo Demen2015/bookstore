@@ -1,0 +1,35 @@
+<div style="font-size:12pt;">
+<p style="font-size:16pt;color:black"><%=  @product.title %></p>
+<p><%= image_tag(@product.image,size:'150x150')%></p>
+<p><span style="color:black">>> Author: </span><%=  @product.author %></p>
+<p><span style="color:black">>> Publisher: </span> <%=  @product.publisher %></p>
+<p><span style="color:black">>> Price: </span><span style="color:red"><%= number_to_currency(@product.price , unit: "", precision: 2,strip_insignificant_zeros: true) + 'VND' %></span></p>
+</div>
+
+<h3>Comments</h3>
+<div style="margin-left:10px;">
+  <% @product.comments.order("id DESC").each do |comment| %>
+    <p>
+      <strong><%= comment.commenter + ":" %></strong>
+      <%=  comment.body %><br>
+      <%= (Time.now).strftime("%d/%m/%Y %H:%M")%>
+    </p>
+    </br>
+  <% end %>
+</div>
+
+<h3>Add a comment:</h3>
+<%= form_for([@product, @product.comments.build]) do |f| %>
+  <p>
+    <%= f.label :commenter  %><br>
+    <%= f.text_field :commenter,class: 'form-control',style: 'width:300px' %>
+  </p>
+
+  <p>
+    <%= f.label :body %><br>
+    <%= f.text_area :body,class: 'form-control',style: 'width:600px;height:200px' %>
+  </p>
+  <p>
+    <%= f.submit :Submit,class: 'btn btn-success',style: 'width:80px'  %>
+  </p>
+<% end %>

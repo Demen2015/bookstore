@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bookstore</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+    <script src="//assets.codepen.io/assets/common/stopExecutionOnTimeout-f961f59a28ef4fd551736b43f94620b5.js"></script>
+
+</head>
+
+ <body>
+
+  <% if flash[:success] %>
+    <div class="alert alert-success fade in" align="center" style="font-size:14pt">
+      <%= flash[:success] %>
+    </div>
+  <% elsif flash[:danger] %>
+    <div class="alert alert-danger fade in" align="center" style="font-size:14pt">
+      <%= flash[:danger] %>
+    </div>
+
+  <% end %>
+
+    <div>
+          <nav class="navbar navbar-inverse">
+            <div class="container">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <%= link_to "Book Store" , root_path ,class: 'navbar-brand'%>
+              </div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav" style="font-size:12pt">
+                  <li class="active">
+                     <%= link_to "Home" , root_path%>
+                  </li>
+                  <li><%= link_to "Shop" ,page_shop_path %></li>
+                  <li><%= link_to "Store" ,page_store_path %></li>
+                  <li><%= link_to "Contact",page_contact_path %></li>
+                  <li><%= link_to "FAQs" , page_faqs_path%></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <% if session[:userId].present? %>
+                    <li class="active">
+                        <a>Welcome <%= session[:username] %></a>
+
+                    </li>
+                    <li>
+                        <%= link_to "<span class='glyphicon glyphicon-log-out'></span> Log out".html_safe,"/logout"%>
+                    </li>
+
+                    <% else %>
+                    <li>
+                        <%= link_to "<span class='glyphicon glyphicon-log-in'></span> Login".html_safe,"/login"%>
+                    </li>
+                    <li>
+                        <%= link_to "<span class='glyphicon glyphicon-log-in'></span> Register".html_safe,"/register"%>
+                    </li>
+
+
+                    <% end %>
+                    <% if session[:cart].present? %>
+                    <li class="active">
+                    <% else %>
+                    <li>
+                    <% end%>
+                        <%= link_to "<span class='glyphicon glyphicon-shopping-cart'></span>YourCart".html_safe,"/cart"%>
+                    </li>
+
+
+
+                    <li class=""><a href="#"><span class="glyphicon glyphicon-calendar"></span> <%= (Time.now).strftime("%d/%m/%Y") %></a></li>
+
+
+                </ul>
+              </div>
+            </div>
+            </div>
+          </nav>
+          <!-- breadcum -->
+          <div class="container">
+           <div class="row"><span style="font-size:16px;color:black;bold;"><%= render_breadcrumbs :separator => ' >> ' %></span></div>
+          </div>
+          <!-- end breadcums class jumbotron-->
+
+          <div class="container" style="margin-top:15px;">
+
+          <%= form_tag("/search", method: "get") do %>
+            <div class="row"  style="background-color:#ecf0f1">
+                <div class="col-md-10">
+                    <%= text_field_tag :search, params[:search],class: 'form-control' %>
+                </div>
+                <div class = "col-md-2">
+                      <%= submit_tag "Search", :name => nil,class: 'btn btn-success' %>
+                </div>
+            </div>
+          <% end %>
+            <div class="row">
+              <div class="col-md-3" style="font-size:12pt">
+                <div class="list-group" style="margin-top:50px;">
+                  <a href="#" class="list-group-item active">
+                    Category
+                  </a>
+                  <% Category.all.each do | category |%>
+                    <%= link_to category.categoryname,category_path(category),class: 'list-group-item'%>
+                  <% end %>
+                <!-- Test image -->
+                <%= image_tag("doremonche.jpg", :size => "100x100", :alt => "アイコン") %>
+                </div>
+
+              </div>
+              <p id="notice"><%= notice %></p>
+              <div class="col-md-9">
+                  <%= yield %>
+              <div class="clearfix visible-lg"></div>
+
+            </div>
+          </div>
+    </div>
+    <div id="footer">
+      <div class="container">
+        <p class="text-muted credit">Copy right 2015 By<a href="huongduong00234@yahoo.com"> ABC Company</a> and <a href="http://ngoisao.com/sticky-footer/"> Ltd.co</a>.</p>
+      </div>
+    </div>
+
+</body>
+</html>

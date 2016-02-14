@@ -1,0 +1,105 @@
+
+<% total = 0 %>
+<% ship = 0 %>
+<p align="right" style="color:#468595">Free economy shipping on all orders over 100.000 VND </p>
+
+
+
+<div class="shopping-cart" style="margin-top:25px">
+    <div class="container-fluid breadcrumbBox text-center">
+      <ol class="breadcrumb" style="font-size:15pt">
+        <li class = "active"><a href="/">Shop</a></li>
+        <li class = "active"><a href="/cart">View</a></li>
+        <li class="active"><a href="/confirm" >Confirm</a></li>
+        <li><a>Complete</a></li>
+      </ol>
+    </div>
+<!--   < form_for(:cart, url: cart_path) do |f|> -->
+  <div class="column-labels">
+    <label class="product-image">Image</label>
+    <label class="product-details">Product</label>
+    <label class="product-price">Price</label>
+    <label class="product-quantity">Quantity</label>
+    <label class="product-removal">Remove</label>
+    <label class="product-line-price">Total</label>
+  </div>
+  <% totalrow = 0 %>
+  <% @cart.each do | id , quantity | %>
+  <div class="product">
+
+    <% @product = Product.find_by_id(id)%>
+    <div class="product-image" style="background-color:white;margin-right:5px">
+      <%= image_tag @product.image ,size: "100x100" %>
+    </div>
+
+    <div class="product-details">
+      <div class="product-title"><h5><%= link_to @product.title ,products_show_path(id: id) %></h5></div>
+      <p class="product-description"><% @product.author%></p>
+    </div>
+
+    <div class="product-price">
+      <%= number_to_currency(@product.price , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+    </div>
+
+    <div class="product-quantity">
+      <%= quantity %>
+    </div>
+
+    <div class="product-line-price" style="font-weight:bold">
+      <% totalrow = quantity * @product.price %>
+      <%= number_to_currency(totalrow , unit: "", precision: 2,strip_insignificant_zeros: true)%>
+    </div>
+    <% total = total + totalrow%>
+  </div>
+  <% end %>
+<!-- < end > --> <!-- end form -->
+  <div class="totals">
+    <div class="totals-item">
+      <label>Subtotal</label>
+      <div class="totals-value" id="cart-subtotal">
+          <%= number_to_currency(total , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+    <div class="totals-item">
+      <label>Tax (5%)</label>
+      <div class="totals-value" id="cart-tax">
+          <% tax = total * 0.05%>
+          <%= number_to_currency(total*0.05 , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+
+    <div class="totals-item">
+      <label>Shipping</label>
+      <div class="totals-value">
+          <% if total > 100000 %>
+             <%= ship %>
+          <% else %>
+             <% ship = 30000 %>
+             <%= number_to_currency(30000, unit: "", precision: 2,strip_insignificant_zeros: true) %>
+          <% end %>
+
+
+      </div>
+    </div>
+
+
+    <div class="totals-item totals-item-total" style="font-size:12pt">
+      <label>Grand Total</label>
+      <div class="totals-value" id="cart-total" style="font-weight:bold">
+
+        <%= number_to_currency(total + tax + ship , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+  </div>
+      <div style="float:left">
+      <button class="btn" onclick="window.location.href='/'" style="background-color:#9081E3;margin-left:3px;color:#fff;height:38px">Continue Shopping</button>
+      </div>
+      <div style="float:right">
+        <button class="btn" onclick="window.location.href='/cart'" style="background-color:#C8D676;margin-left:3px;color:#fff;height:38px">Back</button>
+        <% if session[:cart].present? %>
+        <button class="btn btn-success" onclick="window.location.href='/complete'" style="margin-left:3px;height:38px;color:#fff;">Next</button>
+        <% end %>
+      </div>
+</div>
+<p>&nbsp;</p>
+

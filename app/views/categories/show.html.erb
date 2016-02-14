@@ -1,0 +1,12 @@
+<% if @products.present? %>
+
+<h1 class="btn btn-block btn-md btn-primary" style="font-size:13pt;margin-bottom:20px;"><%= @categories.categoryname %></h1>
+
+
+<div id="products"><%= render 'products' %></div>
+
+<% else %>
+
+  <h3> No book in the category. Please come back later</h3>
+
+<% end %>

@@ -1,0 +1,163 @@
+<% total = 0 %>
+<p align="right" style="color:#468595">Free economy shipping on all orders over 100.000 VND </p>
+
+
+
+<div class="shopping-cart" style="margin-top:25px">
+    <div class="container-fluid breadcrumbBox text-center">
+      <ol class="breadcrumb" style="font-size:15pt">
+        <li class = "active"><a href="/">Shop</a></li>
+        <li class = "active"><a href="/cart">View</a></li>
+        <% if session[:cart].present? %>
+        <li><a>Confirm</a></li>
+        <li><a>Complete</a></li>
+        <% else %>
+        <li><a href="">Confirm</a></li>
+        <li><a href="">Complete</a></li>
+
+        <% end %>
+      </ol>
+    </div>
+<!--   < form_for(:cart, url: cart_path) do |f|> -->
+  <div align="right" style="margin-bottom:50px;"><%= link_to "Empty Cart",cart_delete_path, class: 'btn-lg btn-primary'%></div>
+  <div class="column-labels">
+    <label class="product-image">Image</label>
+    <label class="product-details">Product</label>
+    <label class="product-price">Price</label>
+    <label class="product-quantity">Quantity</label>
+    <label class="product-removal">Remove</label>
+    <label class="product-line-price">Total</label>
+  </div>
+  <% totalrow = 0 %>
+  <% @cart.each do | id , quantity | %>
+  <div class="product">
+
+    <% @product = Product.find_by_id(id)%>
+    <div class="product-image" style="background-color:white;margin-right:5px">
+      <%= image_tag @product.image ,size: "100x100" %>
+    </div>
+
+    <div class="product-details">
+      <div class="product-title"><h5><%= link_to @product.title ,products_show_path(id: id) %></h5></div>
+      <p class="product-description"><% @product.author%></p>
+    </div>
+
+    <div class="product-price">
+      <%= number_to_currency(@product.price , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+    </div>
+
+    <div class="product-quantity">
+      <input type="number" value="<%= quantity %>" min="1">
+    </div>
+
+    <div class="product-removal">
+      <%= link_to 'Remove' ,cart_clear_path(:id=> id), class: 'remove-product' %>
+    </div>
+
+    <div class="product-line-price" style="font-weight:bold">
+      <% totalrow = quantity * @product.price %>
+      <%= number_to_currency(totalrow , unit: "", precision: 2,strip_insignificant_zeros: true)%>
+    </div>
+    <% total = total + totalrow%>
+  </div>
+  <% end %>
+<!-- < end > --> <!-- end form -->
+  <div class="totals">
+    <div class="totals-item">
+      <label>Subtotal</label>
+      <div class="totals-value" id="cart-subtotal">
+          <%= number_to_currency(total , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+    <div class="totals-item">
+      <label>Tax (5%)</label>
+      <div class="totals-value" id="cart-tax">
+          <% tax = total * 0.05%>
+          <%= number_to_currency(total*0.05 , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+
+    <div class="totals-item totals-item-total" style="font-size:12pt">
+      <label>Grand Total</label>
+      <div class="totals-value" id="cart-total" style="font-weight:bold">
+
+        <%= number_to_currency(total + tax , unit: "", precision: 2,strip_insignificant_zeros: true) %>
+      </div>
+    </div>
+  </div>
+      <div style="float:left">
+      <button class="btn" onclick="window.location.href='/'" style="background-color:#9081E3;margin-left:3px;color:#fff;height:38px">Continue Shopping</button>
+      </div>
+      <div style="float:right">
+        <button class="btn" onclick="window.location.href='/'" style="background-color:#C8D676;margin-left:3px;color:#fff;height:38px">Back</button>
+        <% if session[:cart].present? %>
+        <button class="btn btn-success" onclick="window.location.href='/confirm'" style="margin-left:3px;height:38px;color:#fff;">Next</button>
+        <% end %>
+      </div>
+</div>
+<p>&nbsp;</p>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    var taxRate = 0.05;
+    var shippingRate = 25000;
+    var fadeTime = 300;
+    $('.product-quantity input').change(function () {
+        updateQuantity(this);
+    });
+   $(".product-removal button").click(function () {
+       removeItem(this);
+   });
+
+    function removeItem(t) {
+        var productRow = $(t).parent().parent();
+        productRow.slideUp(fadeTime, function () {
+           productRow.remove();
+           recalculateCart();
+        });
+    }
+
+    function recalculateCart() {
+        var subtotal = 0;
+        $('.product').each(function () {
+            subtotal += parseFloat($(this).children('.product-line-price').text());
+        });
+        var tax = subtotal * taxRate;
+        if (subtotal > 100)
+           shipping = 0;
+        else
+           shipping = 26;
+        var total = subtotal + tax;
+        $('.totals-value').fadeOut(fadeTime, function () {
+            $('#cart-subtotal').html(subtotal.toFixed(3).replace(".",","));
+            $('#cart-tax').html(tax.toFixed(3).replace(".",","));
+            $('#cart-shipping').html(shipping.toFixed(3).replace(".",","));
+            $('#cart-total').html(total.toFixed(3).replace(".",","));
+            if (total == 0) {
+                $('.checkout').fadeOut(fadeTime);
+            } else {
+                $('.checkout').fadeIn(fadeTime);
+            }
+            $('.totals-value').fadeIn(fadeTime);
+        });
+    }
+
+    function updateQuantity(quantityInput) {
+        var productRow = $(quantityInput).parent().parent();
+        var price = parseFloat(productRow.children('.product-price').text());
+
+        var quantity = $(quantityInput).val();
+        var linePrice = price * quantity;
+        productRow.children('.product-line-price').each(function () {
+            $(this).fadeOut(fadeTime, function () {
+                $(this).text(linePrice.toFixed(3).replace(".", ","));
+                recalculateCart();
+                $(this).fadeIn(fadeTime);
+            });
+        });
+    }
+
+});
+</script
