@@ -40,6 +40,10 @@ gem 'kaminari'
 gem "breadcrumbs_on_rails"
 gem "devise"
 
+#20191004 Add Gem "" Start
+gem "coffee-rails"
+#20191004 Add Gem End
+
 # Use Unicorn as the app server
 # gem 'unicorn'
 
